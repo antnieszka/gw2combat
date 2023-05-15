@@ -43,3 +43,6 @@ tools/
 *.out
 *.app
 gw2combat
+
+venv/
+.venv/
