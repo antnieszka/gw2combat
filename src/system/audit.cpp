@@ -10,6 +10,7 @@
 #include "component/actor/is_actor.hpp"
 #include "component/actor/is_downstate.hpp"
 #include "component/audit/audit_component.hpp"
+#include "component/counter/is_counter.hpp"
 #include "component/damage/effects_pipeline.hpp"
 #include "component/damage/incoming_damage.hpp"
 #include "component/effect/is_effect.hpp"
@@ -46,11 +47,26 @@ std::vector<audit::skill_cooldown_t> get_skill_cooldowns(entity_t actor_entity,
     return skill_cooldowns;
 }
 
-[[maybe_unused]] std::unordered_map<std::basic_string<char>,
-                                    std::unordered_map<actor::attribute_t, double>>
+std::vector<audit::counter_value_t> get_counter_values(entity_t actor_entity,
+                                                       registry_t& registry) {
+    std::vector<audit::counter_value_t> counter_values;
+    registry.view<component::is_counter>().each(
+        [&](entity_t counter_entity, const component::is_counter& counter) {
+            auto owner_entity = registry.get<component::owner_component>(counter_entity).entity;
+            if (owner_entity != actor_entity) {
+                return;
+            }
+            counter_values.emplace_back(audit::counter_value_t{
+                .counter = counter.counter_configuration.counter_key,
+                .value = counter.value,
+            });
+        });
+    return counter_values;
+}
+
+[[maybe_unused]] std::map<std::basic_string<char>, std::map<actor::attribute_t, double>>
 get_actor_attributes(registry_t& registry) {
-    std::unordered_map<std::basic_string<char>, std::unordered_map<actor::attribute_t, double>>
-        actor_attributes;
+    std::map<std::basic_string<char>, std::map<actor::attribute_t, double>> actor_attributes;
     registry.view<component::is_actor, component::relative_attributes>().each(
         [&](entity_t actor_entity, const component::relative_attributes& relative_attributes) {
             actor_attributes[utils::get_entity_name(actor_entity, registry)] =
@@ -69,6 +85,7 @@ audit::tick_event_t create_tick_event(const decltype(audit::tick_event_t::event)
         .actor = utils::get_entity_name(actor_entity, registry),
         .event = event,
         .skill_cooldowns = get_skill_cooldowns(actor_entity, registry),
+        .counter_values = get_counter_values(actor_entity, registry),
         .current_weapon_set = weapon_set_ptr ? weapon_set_ptr->set : actor::weapon_set::INVALID,
         .current_bundle = bundle_ptr ? bundle_ptr->name : "",
         //.actor_attributes = get_actor_attributes(registry),
@@ -317,28 +334,18 @@ void audit(registry_t& registry) {
     }
 }
 
-audit::report_t get_audit_report(registry_t& registry, const std::string& error) {
+audit::report_t get_audit_report(registry_t& registry, int offset, const std::string& error) {
     audit::report_t audit_report;
     registry.view<component::audit_component>().each(
         [&](const component::audit_component& audit_component) {
-            std::copy(audit_component.events.cbegin(),
+            std::copy(audit_component.events.cbegin() + offset,
                       audit_component.events.cend(),
                       std::back_inserter(audit_report.tick_events));
         });
     if (!error.empty()) {
         audit_report.error = error;
     }
-    return audit_report;
-}
-
-audit::report_t get_audit_report(registry_t& registry) {
-    audit::report_t audit_report;
-    registry.view<component::audit_component>().each(
-        [&](const component::audit_component& audit_component) {
-            std::copy(audit_component.events.cbegin(),
-                      audit_component.events.cend(),
-                      std::back_inserter(audit_report.tick_events));
-        });
+    audit_report.offset = offset;
     return audit_report;
 }
 

@@ -5,11 +5,10 @@
 #include "component/actor/is_downstate.hpp"
 #include "component/actor/relative_attributes.hpp"
 #include "component/actor/static_attributes.hpp"
-#include "component/counter/is_counter.hpp"
 #include "component/damage/incoming_damage.hpp"
 #include "component/hierarchy/owner_component.hpp"
 
-#include "utils/condition_utils.hpp"
+#include "utils/io_utils.hpp"
 
 namespace gw2combat::system {
 
@@ -22,6 +21,7 @@ void setup_combat_stats(registry_t& registry) {
                 entity,
                 component::combat_stats{utils::round_to_nearest_even(
                     static_attributes.attribute_value_map.at(actor::attribute_t::MAX_HEALTH))});
+            registry.emplace_or_replace<component::combat_stats_updated>(entity);
         });
 }
 
@@ -52,16 +52,6 @@ void update_combat_stats(registry_t& registry) {
     // if (health_updated) {
     //     utils::log_component<component::combat_stats>(registry);
     // }
-}
-
-void reset_counters(registry_t& registry) {
-    registry.view<component::is_counter>().each([&](component::is_counter& is_counter) {
-        int reset_at_value = is_counter.counter_configuration.reset_at_value;
-        int current_value = is_counter.value;
-        if (current_value >= reset_at_value) {
-            is_counter.value = current_value - reset_at_value;
-        }
-    });
 }
 
 }  // namespace gw2combat::system

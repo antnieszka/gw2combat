@@ -645,5 +645,6 @@
             "ACTOR_DOWNSTATE"
         ]
     },
-    "require_afk_skills": false
+    "require_afk_skills": false,
+    "audit_offset": 0
 }
