@@ -1,9 +1,9 @@
 {
     "actors": [
         {
-            "name": "dh-hl",
-            "build_path": "resources/build-dh-hl.json",
-            "rotation_path": "resources/rotation-dh-hl.csv",
+            "name": "qcfb",
+            "build_path": "resources/build-qcfb-vip-rit.json",
+            "rotation_path": "resources/rotation-qcfb-late-night.csv",
             "team": 1
         }, {
             "name": "golem",
@@ -18,10 +18,10 @@
             "damage": 4000000
         }, {
             "type": "TIME",
-            "time": 110000
+            "time": 200000
         }, {
             "type": "ROTATION",
-            "actor": "dh-hl"
+            "actor": "qcfb"
         }
     ],
     "audit_configuration": {
