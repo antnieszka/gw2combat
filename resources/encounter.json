@@ -1,9 +1,9 @@
 {
     "actors": [
         {
-            "name": "qcfb",
-            "build_path": "resources/build-qcfb-vip-rit.json",
-            "rotation_path": "resources/rotation-qcfb-late-night.csv",
+            "name": "cfb",
+            "build_path": "resources/build-cfb.json",
+            "rotation_path": "resources/roration-june-2023-cfb.csv",
             "team": 1
         }, {
             "name": "golem",
@@ -21,7 +21,7 @@
             "time": 200000
         }, {
             "type": "ROTATION",
-            "actor": "qcfb"
+            "actor": "cfb"
         }
     ],
     "audit_configuration": {
