@@ -2,8 +2,8 @@
     "actors": [
         {
             "name": "dh-bgh",
-            "build_path": "resources/build-cfb.json",
-            "rotation_path": "resources/rotation-cfb.csv",
+            "build_path": "resources/build-qfb-82qd.json",
+            "rotation_path": "resources/rotation-qfb-june-times.csv",
             "team": 1
         }, {
             "name": "golem",
@@ -18,7 +18,7 @@
             "damage": 4000000
         }, {
             "type": "TIME",
-            "time": 110000
+            "time": 210000
         }, {
             "type": "ROTATION",
             "actor": "dh-bgh"
